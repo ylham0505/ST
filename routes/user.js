@@ -5,6 +5,7 @@ const { getMe, register, login, refreshToken } = require('../controllers/UserCon
 const { getOnebrand } = require('../controllers/BrandController')
 const { getOneCategory } = require('../controllers/CategoryController')
 const { getOneProduct } = require('../controllers/ProductController')
+const { orderCreate } = require('../controllers/OrderController')
 const { registerValidation, loginValidation,  } = require('../validations/Validations')
 const Category = require('../models/Category')
 const SubCategory = require('../models/SubCategory')
@@ -21,6 +22,7 @@ const authenticateUser = (req, res, next) => {
     try {
         const user = jwt.verify(token.replace('Bearer ', ''), 'your_secret_key');
         req.userId = user._id;
+        req.isAdmin = user.isAdmin
         next();
     } catch (error) {
         return res.status(403).json({ message: 'Invalid token' });
@@ -94,5 +96,7 @@ router.get('/category/:id',  getOneCategory)  //authenticateUser
 router.get('/product/:id', getOneProduct) //authenticateUser
 
 router.get('/category/:id/subcategory/:id', CategoryAndSubcategory)
+
+router.post('/order', orderCreate)
 
 module.exports = router
